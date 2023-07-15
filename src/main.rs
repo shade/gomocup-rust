@@ -4,10 +4,16 @@ mod brain;
 extern crate strum;
 
 use core::panic;
-use std::{cell::RefCell, error::Error, str::SplitInclusive};
+use std::cell::RefCell;
 
+use brain::Brain;
+use commands::Command;
+use commands::context::Context;
 use strum::Display;
-mod brains;
+mod brain;
+mod commands;
+
+use std::io::{Read, BufRead};
 
 #[derive(Display, Debug)]
 enum MooMooError {
@@ -29,11 +35,16 @@ macro_rules! read_error {
 
 fn main() -> Result<(), MooMooError> {
     let mut brain: RefCell<Option<dyn Brain>> = RefCell::new(None);
-    
+    let guarded_reader = std::io::stdin().lock();
+    run(guarded_reader, brain)
+}
+
+fn run<T: BufRead, U, V: Brain<U>>(mut input: T, brain: V) -> Result<(), MooMooError>  {
+    let mut context = Context::new();
 
     loop {
         let mut buffer = String::new();
-        std::io::stdin()
+        input
             .read_line(&mut buffer)
             .map_err(|err| read_io_error!(err, "Error reading from stdin"))?;
 
@@ -42,35 +53,16 @@ fn main() -> Result<(), MooMooError> {
             "Could not extract command, no initial space found"
         ))?;
 
-        
-        match command {
-            "START" => {
-                let args = extract_arguments(spliterator, Some(1))?;
-                println!("{:?} with args {:?}", command, args);
-            }
-            "TURN" => {
-                let args = extract_arguments(spliterator, Some(2))?;
-                println!("{:?} with args {:?}", command, args);
-            }
-            "BEGIN" => {
-                let args = extract_arguments(spliterator, Some(0))?;
-                println!("{:?} with args {:?}", command, args);
-            }
-            "BOARD" => {
-                let args = extract_arguments(spliterator, Some(0))?; 
-            }
-            "INFO" => {
-                let args = extract_arguments(spliterator, None)?;
-                println!("{:?} with args {:?}", command, args);
-            }
-            "END" => {
-                let args = extract_arguments(spliterator, Some(0))?;
-                println!("{:?} with args {:?}", command, args);
-            }
-            _ => {
-                panic!("Unknown command {}", command);
-            }
-        }
+        let command: Command = command
+            .parse()
+            .map_err(|err| {
+                match err {
+                    strum::ParseError::VariantNotFound => read_error!("Unimplemented command {}", command),
+                    err @ _ => read_error!("Unexpected error parsing command: {:?}", err)
+                }
+            })?;
+
+        command.execute(&mut context);
     }
 }
 
@@ -91,4 +83,17 @@ fn extract_arguments<'a, T: Iterator<Item = &'a str>>(
     }
 
     Ok(arguments)
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test_run_bad_input() {
+        
+    }
+
+    #[test]
+    fn test_run_unknown_command() {
+
+    }
 }

@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 strum = { version = "0.24", features = ["derive"] }
+assert_cmd = "2.0.12"
