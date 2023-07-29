@@ -2,20 +2,18 @@ use crate::brain::{Brain, GameBoard};
 
 pub struct RandomBrain;
 
-impl <T: GameBoard> Brain<T> for RandomBrain {
-    fn pre_initialize() {
-        // No-op
+impl RandomBrain {
+    pub fn new() -> Self {
+        return RandomBrain
     }
+}
 
-    fn start() -> Self {
-        self.game
-    }
-
-    fn make_move(row: usize, col: usize) -> Result<(), crate::brain::BrainError> {
+impl Brain for RandomBrain {
+    fn pre_initialize(&self) {
         todo!()
     }
 
-    fn get_board() -> T {
+    fn make_move(&self, row: usize, col: usize) -> Result<(), crate::brain::BrainError> {
         todo!()
     }
 }

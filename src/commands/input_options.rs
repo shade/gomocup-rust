@@ -1,3 +1,5 @@
+use crate::{read_error, errors::MooMooError};
+
 
 
 
@@ -6,9 +8,13 @@ pub struct InputOptions {
     pub args: Vec<String>
 }
 
-impl From<String> for InputOptions {
-    pub fn from(self) -> InputOptions {
-        // Split ...
+impl TryFrom<String> for InputOptions {
+    type Error = MooMooError;
+    fn try_from(s: String) -> Result<InputOptions, MooMooError> {
+        Ok(InputOptions{
+            command: "".to_string(),
+            args: vec![]
+        })
     }
 }
 
@@ -30,11 +36,4 @@ fn extract_arguments<'a, T: Iterator<Item = &'a str>>(
     }
 
     Ok(arguments)
-}
-
-
-#[cfg(test)]
-pub mod tests {
-    #[test]
-    fn 
 }

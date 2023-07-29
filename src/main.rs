@@ -1,29 +1,36 @@
+mod game_board;
 mod brain;
 
 #[macro_use]
 extern crate strum;
 
 use core::panic;
-use std::cell::RefCell;
+use std::{cell::RefCell, any::Any, io::{StdinLock, Empty}};
 
-use brain::Brain;
+pub use brain::Brain;
+pub use game_board::GameBoard;
+use brain::{example_brains::random::RandomBrain};
+use commands::game_context::GameContext;
 use commands::Command;
-use commands::context::Context;
+use errors::MooMooError;
+use game_board::empty::EmptyBoard;
 use strum::Display;
-mod brain;
 mod commands;
+mod errors;
 
-use std::io::{Read, BufRead};
-
+use commands::input_options::InputOptions;
+use std::io::{BufRead, Read};
 
 fn main() -> Result<(), MooMooError> {
-    let mut brain: RefCell<Option<dyn Brain>> = RefCell::new(None);
+
     let guarded_reader = std::io::stdin().lock();
-    run(guarded_reader, brain)
+    run::<StdinLock<'_>, RandomBrain>(guarded_reader, RandomBrain::new())
 }
 
-fn run<T: BufRead, U, V: Brain<U>>(mut input: T, brain: V) -> Result<(), MooMooError>  {
-    let mut context = Context::new();
+fn run<T: BufRead, V: Brain>(mut input: T, brain: V) -> Result<(), MooMooError> {
+    //let mut context = GameContext::new();
+
+    //brain;
 
     loop {
         let mut buffer = String::new();
@@ -31,20 +38,17 @@ fn run<T: BufRead, U, V: Brain<U>>(mut input: T, brain: V) -> Result<(), MooMooE
             .read_line(&mut buffer)
             .map_err(|err| io_error!(err, "Error reading from stdin"))?;
 
-        let opts = InputOptions::from(buffer)?;
-        command.execute(&mut context, opts)?;
+        let opts = InputOptions::try_from(buffer)?;
+
+        //command.execute(&mut context, opts)?;
     }
 }
 
 #[cfg(test)]
 mod tests {
     #[test]
-    fn test_run_bad_input() {
-        
-    }
+    fn test_run_bad_input() {}
 
     #[test]
-    fn test_run_unknown_command() {
-
-    }
+    fn test_run_unknown_command() {}
 }

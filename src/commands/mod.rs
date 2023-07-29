@@ -1,8 +1,12 @@
 
 use strum::IntoStaticStr;
 
-use crate::{context::Context, brain::Brain};
-pub mod context;
+use crate::{Brain, game_board::GameBoard};
+
+use self::game_context::GameContext;
+pub mod game_context;
+
+pub mod input_options;
 
 #[derive(IntoStaticStr, Display, EnumString)]
 pub enum Command {
@@ -21,8 +25,7 @@ pub enum Command {
 }
 
 impl Command {
-    pub fn execute<S, T:Brain<S>>(&self, context: &mut Context<S,T>) {
-        self.into();
+    pub fn execute<S: GameBoard, T: Brain>(&self, context: &mut GameContext<S,T>) {
         match self {
             Command::Start => start(context),
             Command::Turn => turn(context),
@@ -34,29 +37,28 @@ impl Command {
     }
 }
 
-fn start<S, T:Brain<S>>(context: &mut Context<S,T>) {
-    context.get_args();
-    
+fn start<S: GameBoard, T: Brain>(context: &mut GameContext<S,T>) {
+
 }
 
-fn turn<S, T:Brain<S>>(context: &mut Context<S,T>) {
-    context.set_brain(T::new());   
+fn turn<S: GameBoard, T: Brain>(context: &mut GameContext<S,T>) {
+
 }
 
-fn begin<S, T:Brain<S>>(context: &mut Context<S,T>) {
-    context.set_brain(T::new());   
-}
+fn begin<S: GameBoard, T: Brain>(context: &mut GameContext<S,T>) {
 
-
-fn board<S, T:Brain<S>>(context: &mut Context<S,T>) {
-    context.set_brain(T::new());   
 }
 
 
-fn info<S, T:Brain<S>>(context: &mut Context<S,T>) {
-    context.set_brain(T::new());   
+fn board<S: GameBoard, T: Brain>(context: &mut GameContext<S,T>) {
+
 }
 
-fn end<S, T:Brain<S>>(context: &mut Context<S,T>) {
-    context.set_brain(T::new());   
+
+fn info<S: GameBoard, T: Brain>(context: &mut GameContext<S,T>) {
+
+}
+
+fn end<S: GameBoard, T: Brain>(context: &mut GameContext<S,T>) {
+
 }
