@@ -6,7 +6,7 @@ use strum::IntoStaticStr;
 
 use crate::{Brain, game_board::GameBoard, errors::MooMooError};
 
-use self::{game_context::GameContext, start_command::StartCommand, turn_command::TurnCommand, info_command::InfoCommand};
+use self::{game_context::GameContext, start_command::StartCommand, turn_command::TurnCommand, info_command::InfoCommand, begin_command::BeginCommand, board_command::BoardCommand, end_command::EndCommand};
 pub mod game_context;
 
 pub mod input_options;
@@ -15,6 +15,9 @@ pub mod input_options;
 pub mod start_command;
 pub mod turn_command;
 pub mod info_command;
+pub mod begin_command;
+pub mod board_command;
+pub mod end_command;
 
 #[derive(Debug, Display)]
 pub enum CommandError {
@@ -36,13 +39,12 @@ pub enum Command {
     Turn(TurnCommand),
     #[strum(serialize="INFO")]
     Info(InfoCommand),
-    /*
     #[strum(serialize="BEGIN")]
-    Begin(u32),
+    Begin(BeginCommand),
     #[strum(serialize="BOARD")]
-    Board(u32),
+    Board(BoardCommand),
     #[strum(serialize="END")]
-    End(u32), */
+    End(EndCommand)
 }
 
 
