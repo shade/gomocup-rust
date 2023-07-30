@@ -3,7 +3,7 @@ use crate::brain::GameConfig;
 
 pub mod empty;
 
-pub trait GameBoard: Sized {
+pub trait GameBoard {
     fn get_string(&self, config: &GameConfig) -> String {
         let a: String = String::new();
         for row in 0..config.game_n {

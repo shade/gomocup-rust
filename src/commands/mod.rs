@@ -1,64 +1,45 @@
 
+use std::default;
+
+use enum_dispatch::enum_dispatch;
 use strum::IntoStaticStr;
 
-use crate::{Brain, game_board::GameBoard};
+use crate::{Brain, game_board::GameBoard, errors::MooMooError};
 
-use self::game_context::GameContext;
+use self::{game_context::GameContext, start_command::StartCommand};
 pub mod game_context;
 
 pub mod input_options;
 
+// Actual command implementations
+pub mod start_command;
+
+#[enum_dispatch]
+pub trait ExecutableCommand : Default {
+    fn execute(&self, context: &mut GameContext, args: Vec<String>) -> Result<(), MooMooError>;
+}
+
 #[derive(IntoStaticStr, Display, EnumString)]
+#[enum_dispatch(ExecutableCommand)]
 pub enum Command {
     #[strum(serialize="START")]
-    Start,
+    Start(StartCommand),
+    /*
     #[strum(serialize="TURN")]
-    Turn,
+    Turn(u32),
     #[strum(serialize="BEGIN")]
-    Begin,
+    Begin(u32),
     #[strum(serialize="BOARD")]
-    Board,
+    Board(u32),
     #[strum(serialize="INFO")]
-    Info,
+    Info(u32),
     #[strum(serialize="END")]
-    End,
+    End(u32), */
 }
 
-impl Command {
-    pub fn execute<S: GameBoard, T: Brain>(&self, context: &mut GameContext<S,T>) {
-        match self {
-            Command::Start => start(context),
-            Command::Turn => turn(context),
-            Command::Begin => begin(context),
-            Command::Board => board(context),
-            Command::Info => info(context),
-            Command::End => end(context),
-        }
+
+impl Default for Command {
+    fn default() -> Self {
+        Command::Start(StartCommand::default())
     }
-}
-
-fn start<S: GameBoard, T: Brain>(context: &mut GameContext<S,T>) {
-
-}
-
-fn turn<S: GameBoard, T: Brain>(context: &mut GameContext<S,T>) {
-
-}
-
-fn begin<S: GameBoard, T: Brain>(context: &mut GameContext<S,T>) {
-
-}
-
-
-fn board<S: GameBoard, T: Brain>(context: &mut GameContext<S,T>) {
-
-}
-
-
-fn info<S: GameBoard, T: Brain>(context: &mut GameContext<S,T>) {
-
-}
-
-fn end<S: GameBoard, T: Brain>(context: &mut GameContext<S,T>) {
-
 }

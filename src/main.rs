@@ -10,7 +10,7 @@ use std::{cell::RefCell, any::Any, io::{StdinLock, Empty}};
 pub use brain::Brain;
 pub use game_board::GameBoard;
 use brain::{example_brains::random::RandomBrain};
-use commands::game_context::GameContext;
+use commands::{game_context::GameContext, ExecutableCommand};
 use commands::Command;
 use errors::MooMooError;
 use game_board::empty::EmptyBoard;
@@ -28,7 +28,7 @@ fn main() -> Result<(), MooMooError> {
 }
 
 fn run<T: BufRead, V: Brain>(mut input: T, brain: V) -> Result<(), MooMooError> {
-    //let mut context = GameContext::new();
+    let mut context = GameContext::default();
 
     //brain;
 
@@ -40,7 +40,7 @@ fn run<T: BufRead, V: Brain>(mut input: T, brain: V) -> Result<(), MooMooError> 
 
         let opts = InputOptions::try_from(buffer)?;
 
-        //command.execute(&mut context, opts)?;
+        opts.command.execute(&mut context, opts.args)?;
     }
 }
 
