@@ -1,6 +1,6 @@
 use crate::assert_argument_count;
 
-use super::ExecutableCommand;
+use super::{ExecutableCommand, CommandResult};
 use crate::commands::game_context::GameContext;
 use crate::commands::CommandError;
 
@@ -8,8 +8,8 @@ use crate::commands::CommandError;
 pub struct EndCommand;
 
 impl ExecutableCommand for EndCommand {
-    fn execute(&self, context: &mut GameContext, args: Vec<String>) -> Result<(), CommandError> {
+    fn execute(&self, context: &mut GameContext, args: Vec<String>) -> Result<CommandResult, CommandError> {
         assert_argument_count!(args, 0);
-        Ok(())
+        Ok(CommandResult::Nop)
     }
 }

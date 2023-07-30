@@ -25,9 +25,14 @@ pub enum CommandError {
     InvalidArguments(String),
 }
 
+pub enum CommandResult {
+    Nop,
+    Quit
+}
+
 #[enum_dispatch]
 pub trait ExecutableCommand : Default {
-    fn execute(&self, context: &mut GameContext, args: Vec<String>) -> Result<(), CommandError>;
+    fn execute(&self, context: &mut GameContext, args: Vec<String>) -> Result<CommandResult, CommandError>;
 }
 
 #[derive(IntoStaticStr, Display, EnumString)]

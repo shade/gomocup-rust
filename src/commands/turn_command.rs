@@ -1,4 +1,4 @@
-use crate::errors::MooMooError;
+use crate::{errors::MooMooError, commands::CommandResult};
 
 use super::{ExecutableCommand, game_context::GameContext, CommandError};
 
@@ -6,8 +6,8 @@ use super::{ExecutableCommand, game_context::GameContext, CommandError};
 pub struct TurnCommand;
 
 impl ExecutableCommand for TurnCommand {
-    fn execute(&self, context: &mut GameContext, args: Vec<String>) -> Result<(), CommandError> {
+    fn execute(&self, context: &mut GameContext, args: Vec<String>) -> Result<CommandResult, CommandError> {
         println!("Turn command executed");
-        return Ok(());
+        Ok(CommandResult::Nop)
     }
 }

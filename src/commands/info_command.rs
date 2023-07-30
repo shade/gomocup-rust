@@ -1,6 +1,6 @@
 use crate::{assert_argument_count, commands::ExecutableCommand, errors::MooMooError};
 
-use super::{game_context::GameContext, CommandError};
+use super::{game_context::GameContext, CommandError, CommandResult};
 
 #[derive(IntoStaticStr, Display, EnumString)]
 pub enum InfoKey {
@@ -30,7 +30,7 @@ impl ExecutableCommand for InfoCommand {
         &self,
         context: &mut GameContext,
         mut args: Vec<String>,
-    ) -> Result<(), CommandError> {
+    ) -> Result<CommandResult, CommandError> {
         assert_argument_count!(&args, 2);
 
         let raw_key = args.remove(0);
@@ -41,6 +41,6 @@ impl ExecutableCommand for InfoCommand {
 
         let value = args.remove(0);
 
-        return Ok(());
+        Ok(CommandResult::Nop)
     }
 }
