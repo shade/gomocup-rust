@@ -1,8 +1,17 @@
+use crate::commands::CommandError;
+
 
 #[derive(Display, Debug)]
 pub enum MooMooError {
     IOError(std::io::Error, String),
     ReadError(String),
+    CommandError(CommandError)
+}
+
+impl From<CommandError> for MooMooError {
+    fn from(err: CommandError) -> Self {
+        MooMooError::CommandError(err)
+    }
 }
 
 #[macro_export]
