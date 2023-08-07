@@ -50,9 +50,40 @@ fn run<T: BufRead, V: Brain>(mut input: T, brain: V) -> Result<(), MooMooError> 
 
 #[cfg(test)]
 mod tests {
+    use std::{process::Command, io::{BufRead, Read}};
+
+    use assert_cmd::prelude::*;
+    use mockall::mock;
+    use assert_matches::assert_matches;
+
+    use crate::{run, brain::MockBrain};
+
+    mock!{
+        Reader{}
+        impl Read for Reader {
+            fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize>;
+        }
+        impl BufRead for Reader {
+            fn fill_buf(&mut self) -> std::io::Result<&'static [u8]>;
+    
+            fn consume(&mut self, amt: usize);
+        }
+    }
+
     #[test]
-    fn test_run_bad_input() {}
+    fn test_run_bad_input() {
+        let brain = MockBrain::new();
+        let mut mock_reader = MockReader::default();
+
+        mock_reader.expect_fill_buf().returning(|| Err(std::io::Error::new(std::io::ErrorKind::Other, "test error")));
+
+        assert_matches!(run(mock_reader, brain), Err(_));
+    }
 
     #[test]
     fn test_run_unknown_command() {}
+
+    fn get_command() -> Command {
+        Command::cargo_bin("moomoo").unwrap()
+    }
 }

@@ -1,3 +1,5 @@
+use mockall::automock;
+
 use crate::game_board::GameBoard;
 
 pub mod example_brains;
@@ -17,6 +19,7 @@ pub enum BrainError {
     CommonError(String)
 }
 
+#[automock]
 pub trait Brain {
     /// Run before a game starts to do any initialization logic
     /// e.g. precomputing results, memory allocation, etc.
