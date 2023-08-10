@@ -4,13 +4,6 @@ use crate::brain::GameConfig;
 pub mod empty;
 pub mod array;
 
-
-pub enum Piece {
-    BlackPiece,
-    WhitePiece
-}
-
-
 pub trait GameBoard {
     fn get_n(&self) -> usize;
     fn get_m(&self) -> usize;

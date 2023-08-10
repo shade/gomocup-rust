@@ -25,8 +25,9 @@ pub trait Brain {
     /// e.g. precomputing results, memory allocation, etc.
     fn pre_initialize(&self);
 
-    /// Used to make a move, should return IllegalMove if the move
-    /// is out of bounds.
-    fn make_move(&self, row: usize, col: usize) -> Result<(), BrainError>;
+    /// Get the next move on the board.
+    fn next_move<T: GameBoard + 'static>(&self, board: T) -> Result<(), BrainError>;
 
+    /// Setup the game config for the brain.
+    fn set_config(config: GameConfig) -> Result<(), BrainError>;
 }
