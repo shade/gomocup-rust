@@ -2,18 +2,33 @@ use crate::brain::GameConfig;
 
 
 pub mod empty;
+pub mod array;
+
+
+pub enum Piece {
+    BlackPiece,
+    WhitePiece
+}
+
 
 pub trait GameBoard {
-    fn get_string(&self, config: &GameConfig) -> String {
+    fn get_n(&self) -> usize;
+    fn get_m(&self) -> usize;
+
+    fn get_string(&self) -> String {
         let a: String = String::new();
-        for row in 0..config.game_n {
-            for col in 0..config.game_m {
+        for row in 0..self.get_n() {
+            for col in 0..self.get_m() {
+                a.push_str(&self.get_piece(row, col));
             }
         }
         return "".to_string();
     }
 
-    fn get_piece(&self, row: usize, col: usize) {
+    fn get_piece(&self, row: usize, col: usize) -> String {
         panic!("You must either implement display() or get_piece() for your GameBoard");
     }
+
+    fn place(&self, row: usize, col: usize);
+    fn remove(&self, row: usize, col: usize);
 }

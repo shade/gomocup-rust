@@ -50,22 +50,25 @@ fn run<T: BufRead, V: Brain>(mut input: T, brain: V) -> Result<(), MooMooError> 
 
 #[cfg(test)]
 mod tests {
-    use std::{process::Command, io::{BufRead, Read}};
+    use std::{
+        io::{BufRead, Read},
+        process::Command,
+    };
 
     use assert_cmd::prelude::*;
-    use mockall::mock;
     use assert_matches::assert_matches;
+    use mockall::mock;
 
-    use crate::{run, brain::MockBrain};
+    use crate::{brain::MockBrain, run};
 
-    mock!{
+    mock! {
         Reader{}
         impl Read for Reader {
             fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize>;
         }
         impl BufRead for Reader {
             fn fill_buf(&mut self) -> std::io::Result<&'static [u8]>;
-    
+
             fn consume(&mut self, amt: usize);
         }
     }
@@ -75,7 +78,9 @@ mod tests {
         let brain = MockBrain::new();
         let mut mock_reader = MockReader::default();
 
-        mock_reader.expect_fill_buf().returning(|| Err(std::io::Error::new(std::io::ErrorKind::Other, "test error")));
+        mock_reader
+            .expect_fill_buf()
+            .returning(|| Err(std::io::Error::new(std::io::ErrorKind::Other, "test error")));
 
         assert_matches!(run(mock_reader, brain), Err(_));
     }

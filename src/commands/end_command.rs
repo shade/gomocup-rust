@@ -10,6 +10,6 @@ pub struct EndCommand;
 impl ExecutableCommand for EndCommand {
     fn execute(&self, context: &mut GameContext, args: Vec<String>) -> Result<CommandResult, CommandError> {
         assert_argument_count!(args, 0);
-        Ok(CommandResult::Nop)
+        Ok(CommandResult::Quit)
     }
 }

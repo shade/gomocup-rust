@@ -16,11 +16,11 @@ impl TryFrom<String> for InputOptions {
             return Err(read_error!("No command provided"));
         }
 
-        let command_str = chunks
-        .remove(0);
-        let command = command_str
-            .parse()
-            .map_err(|e| read_error!("Command '{}' not parsable, debug_info={:?}", command_str, e))?;
+        let command_str = chunks.remove(0);
+
+        let command = command_str.parse().map_err(|e| {
+            read_error!("Command '{}' not parsable, debug_info={:?}", command_str, e)
+        })?;
 
         Ok(InputOptions {
             command,

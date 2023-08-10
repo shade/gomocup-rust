@@ -15,7 +15,7 @@ pub enum BrainError {
     /// Provides a string context for debugging purposes
     IllegalMove(String),
 
-    /// 
+    
     CommonError(String)
 }
 
