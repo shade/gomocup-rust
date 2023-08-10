@@ -1,4 +1,4 @@
-use crate::{errors::MooMooError, read_error};
+use crate::{errors::GomocupError, read_error};
 
 use super::Command;
 
@@ -8,8 +8,8 @@ pub struct InputOptions {
 }
 
 impl TryFrom<String> for InputOptions {
-    type Error = MooMooError;
-    fn try_from(s: String) -> Result<InputOptions, MooMooError> {
+    type Error = GomocupError;
+    fn try_from(s: String) -> Result<InputOptions, GomocupError> {
         let mut chunks: Vec<String> = s.split_whitespace().map(String::from).collect();
 
         if chunks.is_empty() {
@@ -32,7 +32,7 @@ impl TryFrom<String> for InputOptions {
 fn extract_arguments<'a, T: Iterator<Item = &'a str>>(
     argument_str: T,
     expected_count: Option<usize>,
-) -> Result<Vec<&'a str>, MooMooError> {
+) -> Result<Vec<&'a str>, GomocupError> {
     let arguments: Vec<&str> = argument_str.collect::<Vec<&str>>();
 
     if let Some(expected_count) = expected_count {

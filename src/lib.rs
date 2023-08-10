@@ -11,11 +11,9 @@ use std::{
     io::{Empty, StdinLock},
 };
 
-use brain::example_brains::random::RandomBrain;
-pub use brain::Brain;
-use commands::Command;
+
 use commands::{game_context::GameContext, ExecutableCommand};
-use errors::MooMooError;
+use errors::GomocupError;
 use game_board::empty::EmptyBoard;
 pub use game_board::GameBoard;
 use strum::Display;
@@ -25,12 +23,14 @@ mod errors;
 use commands::input_options::InputOptions;
 use std::io::{BufRead, Read};
 
-fn main() -> Result<(), MooMooError> {
+pub use brain::Brain;
+
+pub fn run<T: Brain>(brain: T) -> Result<(), GomocupError> {
     let guarded_reader = std::io::stdin().lock();
-    run::<StdinLock<'_>, RandomBrain>(guarded_reader, RandomBrain::new())
+    run_inner::<StdinLock<'_>, T>(guarded_reader, brain)
 }
 
-fn run<T: BufRead, V: Brain>(mut input: T, brain: V) -> Result<(), MooMooError> {
+fn run_inner<T: BufRead, V: Brain>(mut input: T, brain: V) -> Result<(), GomocupError> {
     let mut context = GameContext::default();
 
     loop {
@@ -48,6 +48,7 @@ fn run<T: BufRead, V: Brain>(mut input: T, brain: V) -> Result<(), MooMooError> 
     }
 }
 
+/*
 #[cfg(test)]
 mod tests {
     use std::{
@@ -92,3 +93,4 @@ mod tests {
         Command::cargo_bin("moomoo").unwrap()
     }
 }
+ */

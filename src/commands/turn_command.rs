@@ -1,4 +1,4 @@
-use crate::{errors::MooMooError, commands::CommandResult};
+use crate::{errors::GomocupError, commands::CommandResult};
 
 use super::{ExecutableCommand, game_context::GameContext, CommandError};
 

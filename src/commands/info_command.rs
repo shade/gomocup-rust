@@ -1,4 +1,4 @@
-use crate::{assert_argument_count, commands::ExecutableCommand, errors::MooMooError};
+use crate::{assert_argument_count, commands::ExecutableCommand, errors::GomocupError};
 
 use super::{game_context::GameContext, CommandError, CommandResult};
 
