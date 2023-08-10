@@ -1,6 +1,6 @@
 use mockall::automock;
 
-use crate::game_board::GameBoard;
+use crate::board::GameBoard;
 
 pub mod example_brains;
 

@@ -4,7 +4,7 @@ use std::default;
 use enum_dispatch::enum_dispatch;
 use strum::IntoStaticStr;
 
-use crate::{Brain, game_board::GameBoard, errors::GomocupError};
+use crate::{Brain, board::GameBoard, errors::GomocupError};
 
 use self::{game_context::GameContext, start_command::StartCommand, turn_command::TurnCommand, info_command::InfoCommand, begin_command::BeginCommand, board_command::BoardCommand, end_command::EndCommand};
 pub mod game_context;

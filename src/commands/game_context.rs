@@ -1,6 +1,6 @@
 use std::{time::Duration, marker::PhantomData, default};
 
-use crate::{Brain, game_board::GameBoard};
+use crate::{Brain, board::GameBoard};
 
 #[derive(Default)]
 pub enum GameType {

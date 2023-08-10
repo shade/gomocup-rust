@@ -1,5 +1,5 @@
 mod brain;
-mod game_board;
+mod board;
 
 #[macro_use]
 extern crate strum;
@@ -14,8 +14,8 @@ use std::{
 
 use commands::{game_context::GameContext, ExecutableCommand};
 use errors::GomocupError;
-use game_board::empty::EmptyBoard;
-pub use game_board::GameBoard;
+use board::empty::EmptyBoard;
+pub use board::GameBoard;
 use strum::Display;
 mod commands;
 mod errors;
