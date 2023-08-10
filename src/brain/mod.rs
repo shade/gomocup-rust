@@ -25,9 +25,11 @@ pub trait Brain {
     /// e.g. precomputing results, memory allocation, etc.
     fn pre_initialize(&self);
 
-    /// Get the next move on the board.
+    /// Compute the next move on the gameboard. Depending on
     fn next_move<T: GameBoard + 'static>(&self, board: T) -> Result<(), BrainError>;
 
     /// Setup the game config for the brain.
+    /// Though most of the GameConfig is sent at the beginning of the game it is possible
+    /// for this value to change mid-game. The brain should be able to handle this.
     fn set_config(config: GameConfig) -> Result<(), BrainError>;
 }

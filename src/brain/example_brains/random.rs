@@ -1,4 +1,4 @@
-use crate::brain::{Brain, GameBoard};
+use crate::brain::{Brain, GameBoard, BrainError, GameConfig};
 
 pub struct RandomBrain;
 
@@ -9,11 +9,14 @@ impl RandomBrain {
 }
 
 impl Brain for RandomBrain {
-    fn pre_initialize(&self) {
-        todo!()
+
+    /// Get the next move on the board.
+    fn next_move<T: GameBoard + 'static>(&self, board: T) -> Result<(), BrainError> {
+        Ok(())
     }
 
-    fn make_move(&self, row: usize, col: usize) -> Result<(), crate::brain::BrainError> {
-        todo!()
+    /// Setup the game config for the brain.
+    fn set_config(config: GameConfig) -> Result<(), BrainError> {
+        Ok(())
     }
 }
