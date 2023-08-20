@@ -1,9 +1,9 @@
 use crate::brain::GameConfig;
 
 
-pub mod empty;
 pub mod array;
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum BoardError {
     InvalidPlace(String)
 }
@@ -24,20 +24,30 @@ impl std::ops::Not for GamePiece {
     }
 }
 
+#[mockall::automock]
 pub trait GameBoard {
-    fn get_n(&self) -> usize;
-    fn get_m(&self) -> usize;
+    fn get_n(&self) -> usize {
+        todo!();
+    }
+    fn get_m(&self) -> usize {
+        todo!();
+    }
 
-    fn get_current_piece(&self) -> GamePiece;
+    fn get_current_piece(&self) -> GamePiece {
+        todo!();
+    }
 
-    fn place(&self, row: usize, col: usize) -> Result<(), BoardError>;
-    fn remove(&self, row: usize, col: usize) -> Result<(), BoardError>;
+    fn place(&self, row: usize, col: usize) -> Result<(), BoardError> {
+        todo!();
+    }
+    fn remove(&self, row: usize, col: usize) -> Result<(), BoardError> {
+        todo!();
+    }
 
     fn get_string(&self) -> String {
         let a: String = String::new();
         for row in 0..self.get_n() {
             for col in 0..self.get_m() {
-                a.push_str(&self.get_piece(row, col));
             }
         }
         return "".to_string();

@@ -2,8 +2,6 @@ use mockall::automock;
 
 use crate::board::GameBoard;
 
-pub mod example_brains;
-
 
 pub struct GameConfig {
     pub game_n: usize,

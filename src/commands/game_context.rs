@@ -1,6 +1,6 @@
 use std::{time::Duration, marker::PhantomData, default};
 
-use crate::{Brain, board::GameBoard};
+use crate::{Brain, GameBoard};
 
 #[derive(Default)]
 pub enum GameType {
@@ -21,7 +21,6 @@ pub struct GameRules {
 
 #[derive(Default)]
 pub struct GameContext {
-    pub brain: Option<Box<dyn Brain>>,
     pub board: Option<Box<dyn GameBoard>>,
     pub timeout_turn: Duration,
     pub timeout_match: Duration,

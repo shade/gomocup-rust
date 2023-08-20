@@ -11,8 +11,7 @@ impl ExecutableCommand for BeginCommand {
     fn execute(&self, context: &mut GameContext, args: Vec<String>) -> Result<CommandResult, CommandError> {
         assert_argument_count!(args, 0);
 
-        context.brain.next_move();
         
-        Ok(CommandResult::Nop)
+        Ok(CommandResult::Continue)
     }
 }

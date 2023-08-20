@@ -13,8 +13,7 @@ use std::{
 
 
 use commands::{game_context::GameContext, ExecutableCommand};
-use errors::GomocupError;
-use board::empty::EmptyBoard;
+pub use errors::GomocupError;
 pub use board::GameBoard;
 use strum::Display;
 mod commands;
@@ -42,13 +41,12 @@ fn run_inner<T: BufRead, V: Brain>(mut input: T, brain: V) -> Result<(), Gomocup
         let opts = InputOptions::try_from(buffer)?;
 
         match opts.command.execute(&mut context, opts.args)? {
-            commands::CommandResult::Nop => {}
+            commands::CommandResult::Continue => {}
             commands::CommandResult::Quit => break Ok(()),
         }
     }
 }
 
-/*
 #[cfg(test)]
 mod tests {
     use std::{
@@ -60,7 +58,7 @@ mod tests {
     use assert_matches::assert_matches;
     use mockall::mock;
 
-    use crate::{brain::MockBrain, run};
+    use crate::{brain::MockBrain, run, run_inner};
 
     mock! {
         Reader{}
@@ -83,7 +81,7 @@ mod tests {
             .expect_fill_buf()
             .returning(|| Err(std::io::Error::new(std::io::ErrorKind::Other, "test error")));
 
-        assert_matches!(run(mock_reader, brain), Err(_));
+        assert_matches!(run_inner(mock_reader, brain), Err(_));
     }
 
     #[test]
@@ -93,4 +91,4 @@ mod tests {
         Command::cargo_bin("moomoo").unwrap()
     }
 }
- */
+ 

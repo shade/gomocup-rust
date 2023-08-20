@@ -41,6 +41,6 @@ impl ExecutableCommand for InfoCommand {
 
         let value = args.remove(0);
 
-        Ok(CommandResult::Nop)
+        Ok(CommandResult::Continue)
     }
 }

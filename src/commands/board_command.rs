@@ -13,13 +13,13 @@ impl ExecutableCommand for BoardCommand {
         let row = args.get(0);
         let col = args.get(1);
         
-        if let Some(board) = context.board {
-            board.get_piece(row, col);
+        if let Some(board) = context.board.as_mut() {
+            //board.get_piece(row, col);
         } else {
 
         }
 
 
-        Ok(CommandResult::Nop)
+        Ok(CommandResult::Continue)
     }
 }

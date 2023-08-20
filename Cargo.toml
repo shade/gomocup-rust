@@ -19,3 +19,4 @@ strum = { version = "0.24", features = ["derive"] }
 enum_dispatch = "0.3.12"
 mockall = "0.11.4"
 assert_matches = "1.5.0"
+rstest = "0.18.2"

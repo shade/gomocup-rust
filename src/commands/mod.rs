@@ -23,10 +23,13 @@ pub mod end_command;
 pub enum CommandError {
     InvalidCommand,
     InvalidArguments(String),
+
+    IllegalState(String)
 }
 
+#[derive(Debug)]
 pub enum CommandResult {
-    Nop,
+    Continue,
     Quit
 }
 
