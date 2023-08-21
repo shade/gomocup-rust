@@ -30,4 +30,7 @@ pub trait Brain {
     /// Though most of the GameConfig is sent at the beginning of the game it is possible
     /// for this value to change mid-game. The brain should be able to handle this.
     fn set_config(config: GameConfig) -> Result<(), BrainError>;
+
+    /// Run after a game ends to do any cleanup logic.
+    fn end(&mut self);
 }

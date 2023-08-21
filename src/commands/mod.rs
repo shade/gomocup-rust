@@ -44,7 +44,7 @@ pub enum CommandResult {
 
 #[enum_dispatch]
 pub trait ExecutableCommand : Default {
-    fn execute<G: GameBoard>(&self, context: &mut GameContext<G>, args: Vec<String>) -> Result<CommandResult, CommandError>;
+    fn execute<G: GameBoard, B: Brain>(&self, brain: &mut B, context: &mut GameContext<G>, args: Vec<String>) -> Result<CommandResult, CommandError>;
 }
 
 #[derive(IntoStaticStr, Display, EnumString)]

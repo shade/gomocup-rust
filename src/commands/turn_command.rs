@@ -1,6 +1,6 @@
 use std::num::ParseIntError;
 
-use crate::{errors::GomocupError, commands::CommandResult, GameBoard};
+use crate::{errors::GomocupError, commands::CommandResult, GameBoard, Brain, assert_argument_count};
 
 use super::{ExecutableCommand, game_context::GameContext, CommandError};
 
@@ -8,11 +8,8 @@ use super::{ExecutableCommand, game_context::GameContext, CommandError};
 pub struct TurnCommand;
 
 impl ExecutableCommand for TurnCommand {
-    fn execute<G: GameBoard>(&self, context: &mut GameContext<G>, args: Vec<String>) -> Result<CommandResult, CommandError> {
-        if args.len() > 1 {
-            return Err(CommandError::InvalidArguments(format!("Expected 1 argument, a comma separated\
-             list of coordinates, got {:?}", args)));
-        }
+    fn execute<G: GameBoard, B: Brain>(&self, brain: &mut B, context: &mut GameContext<G>, args: Vec<String>) -> Result<CommandResult, CommandError> {
+        assert_argument_count!(args, 1);
 
         let coordinates = args.get(0)
             .ok_or(CommandError::InvalidArguments("Expected 1 argument, got 0".to_string()))?
@@ -39,7 +36,7 @@ impl ExecutableCommand for TurnCommand {
 
 #[cfg(test)]
 mod test {
-    use crate::board::{MockGameBoard, BoardError};
+    use crate::{board::{MockGameBoard, BoardError}, brain::MockBrain};
 
     use super::*;
     use assert_matches::assert_matches;
@@ -54,16 +51,18 @@ mod test {
     #[case(vec![])]
     #[case(vec!["12934"])]
     fn test_invalid_args_fails(#[case] input: Vec<&str>) {
+        let mut brain = MockBrain::new();
         let cmd = TurnCommand::default();
         let args = input.into_iter().map(|s| s.to_string()).collect();
 
-        assert_matches!(cmd.execute::<MockGameBoard>(&mut GameContext::default(), args), Err(CommandError::InvalidArguments(_)))
+        assert_matches!(cmd.execute::<MockGameBoard, _>(&mut brain, &mut GameContext::default(), args), Err(CommandError::InvalidArguments(_)))
     }
 
     #[test]
     fn test_calls_place() {
+        let mut brain = MockBrain::new();
         let mut context = GameContext::default();
-        let mut board = MockGameBoard::new(0).unwrap();
+        let mut board = MockGameBoard::default();
         board.expect_place()
             .with(eq(1), eq(2))
             .times(1)
@@ -74,13 +73,14 @@ mod test {
         let cmd = TurnCommand::default();
         let args = vec!["1,2"].into_iter().map(|s| s.to_string()).collect();
 
-        assert_matches!(cmd.execute(&mut context, args), Ok(CommandResult::Ok));
+        assert_matches!(cmd.execute(&mut brain, &mut context, args), Ok(CommandResult::Ok));
     }
 
     #[test]
     fn test_bubbles_up_board_error() {
+        let mut brain = MockBrain::new();
         let mut context = GameContext::default();
-        let mut board = MockGameBoard::new(0).unwrap();
+        let mut board = MockGameBoard::default();
         board.expect_place()
             .with(eq(1), eq(2))
             .times(1)
@@ -91,6 +91,6 @@ mod test {
         let cmd = TurnCommand::default();
         let args = vec!["1,2"].into_iter().map(|s| s.to_string()).collect();
 
-        assert_matches!(cmd.execute(&mut context, args), Err(CommandError::IllegalState(_)));
+        assert_matches!(cmd.execute(&mut brain, &mut context, args), Err(CommandError::IllegalState(_)));
     }
 }

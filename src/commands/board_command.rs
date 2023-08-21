@@ -1,4 +1,4 @@
-use crate::{assert_argument_count, GameBoard};
+use crate::{assert_argument_count, GameBoard, Brain};
 
 use super::{ExecutableCommand, CommandResult};
 use crate::commands::game_context::GameContext;
@@ -8,7 +8,7 @@ use crate::commands::CommandError;
 pub struct BoardCommand;
 
 impl ExecutableCommand for BoardCommand {
-    fn execute<G: GameBoard>(&self, context: &mut GameContext<G>, args: Vec<String>) -> Result<CommandResult, CommandError> {
+    fn execute<G: GameBoard, B: Brain>(&self, brain: &mut B, context: &mut GameContext<G>, args: Vec<String>) -> Result<CommandResult, CommandError> {
         assert_argument_count!(args, 2);
         let row = args.get(0);
         let col = args.get(1);

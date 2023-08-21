@@ -1,4 +1,4 @@
-use crate::GameBoard;
+use crate::{GameBoard, Brain, assert_argument_count};
 
 use super::{ExecutableCommand, CommandError, CommandResult, game_context};
 
@@ -6,10 +6,8 @@ use super::{ExecutableCommand, CommandError, CommandResult, game_context};
 pub struct StartCommand;
 
 impl ExecutableCommand for StartCommand {
-    fn execute<G: GameBoard> (&self, context: &mut super::game_context::GameContext<G>, args: Vec<String>) -> Result<CommandResult, CommandError> {
-        if args.len() != 1 {
-            return Err(CommandError::InvalidArguments("Expected exactly one argument, board size for 'START'".to_string()))
-        }
+    fn execute<G: GameBoard, B: Brain>(&self, brain: &mut B, context: &mut super::game_context::GameContext<G>, args: Vec<String>) -> Result<CommandResult, CommandError> {
+        assert_argument_count!(args, 1);
 
         let size = args[0].parse::<u64>()
             .map_err(|e| CommandError::InvalidArguments(format!("Invalid board size: {}", e)))?;
@@ -25,7 +23,7 @@ mod test {
     use assert_matches::assert_matches;
     use rstest::rstest;
 
-    use crate::{board::{MockGameBoard, BoardError}, commands::{game_context::{self, GameContext}, ExecutableCommand, CommandResult}};
+    use crate::{board::{MockGameBoard, BoardError}, commands::{game_context::{self, GameContext}, ExecutableCommand, CommandResult}, brain::MockBrain};
 
     use super::StartCommand;
 
@@ -36,17 +34,19 @@ mod test {
     #[case(vec!["a"])]
     #[case(vec![])]
     fn test_start_command_rejects_invalid_args(#[case] args: Vec<&str>) {
+        let mut brain = MockBrain::new();
         let args = args.into_iter().map(|s| s.to_string()).collect();
         let mut game_context = GameContext::<MockGameBoard>::default();
 
         assert_matches!(StartCommand::default()
-        .execute(&mut game_context, args), Err(crate::commands::CommandError::InvalidArguments(_)));
+        .execute(&mut  brain, &mut game_context, args), Err(crate::commands::CommandError::InvalidArguments(_)));
 
     }
 
     #[test]
     fn test_start_command() {
         let board_size = 12;
+        let mut brain = MockBrain::new();
         let mut game_context = GameContext::<MockGameBoard>::default();
         let context = MockGameBoard::new_context();
         context.expect()
@@ -56,7 +56,7 @@ mod test {
             });
 
         let result = StartCommand::default()
-            .execute(&mut game_context, vec![format!("{}", board_size)]);
+            .execute(&mut brain, &mut game_context, vec![format!("{}", board_size)]);
 
 
         assert_matches!(result, Ok(CommandResult::Ok));

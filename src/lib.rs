@@ -23,13 +23,14 @@ use std::io::{BufRead, Read};
 
 pub use brain::Brain;
 
-pub fn run<T: Brain, G: GameBoard>(brain: T) -> Result<(), GomocupError> {
+pub fn run<B: Brain, G: GameBoard>(brain: &mut B) -> Result<(), GomocupError> {
     let guarded_reader = std::io::stdin().lock();
-    run_inner::<StdinLock<'_>, T, G>(guarded_reader, brain)
+    run_inner::<StdinLock<'_>, B, G>(guarded_reader, brain)
 }
 
-fn run_inner<T: BufRead, V: Brain, G: GameBoard>(mut input: T, brain: V) -> Result<(), GomocupError> {
+fn run_inner<T: BufRead, B: Brain, G: GameBoard>(mut input: T, mut brain: &mut B) -> Result<(), GomocupError> {
     let mut context: GameContext<G> = GameContext::default();
+    brain.pre_initialize();
 
     loop {
         let mut buffer = String::new();
@@ -39,7 +40,7 @@ fn run_inner<T: BufRead, V: Brain, G: GameBoard>(mut input: T, brain: V) -> Resu
 
         let opts = InputOptions::try_from(buffer)?;
 
-        match opts.command.execute(&mut context, opts.args) {
+        match opts.command.execute(brain, &mut context, opts.args) {
             Ok(cmd) => match cmd {
                 CommandResult::Continue => {}
                 CommandResult::Output(output) => println!("{}", output),
@@ -78,20 +79,17 @@ mod tests {
 
     #[test]
     fn test_run_bad_input() {
-        let brain = MockBrain::new();
+        let mut brain = MockBrain::new();
+        brain.expect_pre_initialize().return_const(());
         let mut mock_reader = MockReader::default();
 
         mock_reader
             .expect_fill_buf()
             .returning(|| Err(std::io::Error::new(std::io::ErrorKind::Other, "test error")));
 
-        assert_matches!(run_inner::<_,_,MockGameBoard>(mock_reader, brain), Err(_));
+        assert_matches!(run_inner::<_,_,MockGameBoard>(mock_reader, &mut brain), Err(_));
     }
 
     #[test]
     fn test_run_unknown_command() {}
-
-    fn get_command() -> Command {
-        Command::cargo_bin("moomoo").unwrap()
-    }
 }

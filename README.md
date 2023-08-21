@@ -9,7 +9,7 @@ use gomocup_rust::{Brain, GomocupError, run}
 
 fn main() -> Result<(), GomocupError> {
     // Construct your brain.
-    let brain: Brain = CustomBrain::new();
+    let brain: &mut Brain = CustomBrain::new();
     // Run the implementation.
     run(brain)
 }
