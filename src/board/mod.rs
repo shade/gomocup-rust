@@ -1,3 +1,5 @@
+use std::default;
+
 use crate::brain::GameConfig;
 
 
@@ -8,7 +10,11 @@ pub enum BoardError {
     InvalidPlace(String)
 }
 
+
+#[derive(Default)]
 pub enum GamePiece {
+    #[default]
+    Empty,
     White,
     Black
 }
@@ -19,20 +25,22 @@ impl std::ops::Not for GamePiece {
     fn not(self) -> Self::Output {
         match self {
             GamePiece::White => GamePiece::Black,
-            GamePiece::Black => GamePiece::White
+            GamePiece::Black => GamePiece::White,
+            GamePiece::Empty => GamePiece::Empty
         }
     }
 }
 
 #[mockall::automock]
-pub trait GameBoard {
-    fn get_n(&self) -> usize {
-        todo!();
-    }
-    fn get_m(&self) -> usize {
+pub trait GameBoard: Default {
+    fn new(size: u64) -> Result<Self, BoardError>;
+
+    /// Get the length of the board, the board is always square.
+    fn get_length(&self) -> usize {
         todo!();
     }
 
+    /// Get the current piece to play.
     fn get_current_piece(&self) -> GamePiece {
         todo!();
     }
@@ -46,8 +54,8 @@ pub trait GameBoard {
 
     fn get_string(&self) -> String {
         let a: String = String::new();
-        for row in 0..self.get_n() {
-            for col in 0..self.get_m() {
+        for row in 0..self.get_length() {
+            for col in 0..self.get_length() {
             }
         }
         return "".to_string();

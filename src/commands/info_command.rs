@@ -1,4 +1,4 @@
-use crate::{assert_argument_count, commands::ExecutableCommand, errors::GomocupError};
+use crate::{assert_argument_count, commands::ExecutableCommand, errors::GomocupError, GameBoard};
 
 use super::{game_context::GameContext, CommandError, CommandResult};
 
@@ -26,9 +26,9 @@ pub enum InfoKey {
 pub struct InfoCommand;
 
 impl ExecutableCommand for InfoCommand {
-    fn execute(
+    fn execute<G: GameBoard> (
         &self,
-        context: &mut GameContext,
+        context: &mut GameContext<G>,
         mut args: Vec<String>,
     ) -> Result<CommandResult, CommandError> {
         assert_argument_count!(&args, 2);
@@ -41,6 +41,6 @@ impl ExecutableCommand for InfoCommand {
 
         let value = args.remove(0);
 
-        Ok(CommandResult::Continue)
+        Ok(CommandResult::Ok)
     }
 }

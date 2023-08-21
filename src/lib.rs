@@ -1,5 +1,5 @@
-mod brain;
 mod board;
+mod brain;
 
 #[macro_use]
 extern crate strum;
@@ -11,10 +11,9 @@ use std::{
     io::{Empty, StdinLock},
 };
 
-
-use commands::{game_context::GameContext, ExecutableCommand};
-pub use errors::GomocupError;
 pub use board::GameBoard;
+use commands::{game_context::GameContext, ExecutableCommand, CommandResult};
+pub use errors::GomocupError;
 use strum::Display;
 mod commands;
 mod errors;
@@ -24,13 +23,13 @@ use std::io::{BufRead, Read};
 
 pub use brain::Brain;
 
-pub fn run<T: Brain>(brain: T) -> Result<(), GomocupError> {
+pub fn run<T: Brain, G: GameBoard>(brain: T) -> Result<(), GomocupError> {
     let guarded_reader = std::io::stdin().lock();
-    run_inner::<StdinLock<'_>, T>(guarded_reader, brain)
+    run_inner::<StdinLock<'_>, T, G>(guarded_reader, brain)
 }
 
-fn run_inner<T: BufRead, V: Brain>(mut input: T, brain: V) -> Result<(), GomocupError> {
-    let mut context = GameContext::default();
+fn run_inner<T: BufRead, V: Brain, G: GameBoard>(mut input: T, brain: V) -> Result<(), GomocupError> {
+    let mut context: GameContext<G> = GameContext::default();
 
     loop {
         let mut buffer = String::new();
@@ -40,9 +39,14 @@ fn run_inner<T: BufRead, V: Brain>(mut input: T, brain: V) -> Result<(), Gomocup
 
         let opts = InputOptions::try_from(buffer)?;
 
-        match opts.command.execute(&mut context, opts.args)? {
-            commands::CommandResult::Continue => {}
-            commands::CommandResult::Quit => break Ok(()),
+        match opts.command.execute(&mut context, opts.args) {
+            Ok(cmd) => match cmd {
+                CommandResult::Continue => {}
+                CommandResult::Output(output) => println!("{}", output),
+                CommandResult::Ok => println!("OK"),
+                CommandResult::Quit => break Ok(()),
+            },
+            Err(err) => println!("ERROR {}", err),
         }
     }
 }
@@ -58,7 +62,7 @@ mod tests {
     use assert_matches::assert_matches;
     use mockall::mock;
 
-    use crate::{brain::MockBrain, run, run_inner};
+    use crate::{brain::MockBrain, run, run_inner, GameBoard, board::MockGameBoard};
 
     mock! {
         Reader{}
@@ -81,7 +85,7 @@ mod tests {
             .expect_fill_buf()
             .returning(|| Err(std::io::Error::new(std::io::ErrorKind::Other, "test error")));
 
-        assert_matches!(run_inner(mock_reader, brain), Err(_));
+        assert_matches!(run_inner::<_,_,MockGameBoard>(mock_reader, brain), Err(_));
     }
 
     #[test]
@@ -91,4 +95,3 @@ mod tests {
         Command::cargo_bin("moomoo").unwrap()
     }
 }
- 

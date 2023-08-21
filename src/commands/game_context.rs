@@ -20,8 +20,8 @@ pub struct GameRules {
 }
 
 #[derive(Default)]
-pub struct GameContext {
-    pub board: Option<Box<dyn GameBoard>>,
+pub struct GameContext<T: GameBoard> {
+    pub board: Option<T>,
     pub timeout_turn: Duration,
     pub timeout_match: Duration,
     pub max_memory: u64,

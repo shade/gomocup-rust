@@ -2,6 +2,7 @@ use crate::GameBoard;
 
 use super::{GamePiece, BoardError};
 
+#[derive(Default)]
 pub struct ArrayBoard {
     pub board: Vec<Vec<Option<GamePiece>>>,
     pub n: usize,
@@ -22,4 +23,7 @@ impl ArrayBoard {
 
 
 impl GameBoard for ArrayBoard {
+    fn new(size: u64) -> Result<Self, BoardError> {
+        return Ok(ArrayBoard::default());
+    }
 }

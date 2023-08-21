@@ -4,7 +4,7 @@ use std::default;
 use enum_dispatch::enum_dispatch;
 use strum::IntoStaticStr;
 
-use crate::{Brain, board::GameBoard, errors::GomocupError};
+use crate::{Brain, board::{GameBoard, BoardError}, errors::GomocupError};
 
 use self::{game_context::GameContext, start_command::StartCommand, turn_command::TurnCommand, info_command::InfoCommand, begin_command::BeginCommand, board_command::BoardCommand, end_command::EndCommand};
 pub mod game_context;
@@ -23,19 +23,28 @@ pub mod end_command;
 pub enum CommandError {
     InvalidCommand,
     InvalidArguments(String),
+    BoardError(BoardError),
 
     IllegalState(String)
 }
 
+impl From<BoardError> for CommandError {
+    fn from(value: BoardError) -> Self {
+        CommandError::BoardError(value)
+    }
+}
+
 #[derive(Debug)]
 pub enum CommandResult {
+    Output(String),
+    Ok,
     Continue,
-    Quit
+    Quit,
 }
 
 #[enum_dispatch]
 pub trait ExecutableCommand : Default {
-    fn execute(&self, context: &mut GameContext, args: Vec<String>) -> Result<CommandResult, CommandError>;
+    fn execute<G: GameBoard>(&self, context: &mut GameContext<G>, args: Vec<String>) -> Result<CommandResult, CommandError>;
 }
 
 #[derive(IntoStaticStr, Display, EnumString)]
