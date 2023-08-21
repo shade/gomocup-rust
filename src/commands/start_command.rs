@@ -1,6 +1,6 @@
 use crate::{GameBoard, Brain, assert_argument_count};
 
-use super::{ExecutableCommand, CommandError, CommandResult, game_context};
+use super::{ExecutableCommand, ExecutableCommandWithInput, CommandError, CommandResult, game_context};
 
 #[derive(Default)]
 pub struct StartCommand;

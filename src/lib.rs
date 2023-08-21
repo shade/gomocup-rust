@@ -12,7 +12,7 @@ use std::{
 };
 
 pub use board::GameBoard;
-use commands::{game_context::GameContext, ExecutableCommand, CommandResult};
+use commands::{game_context::GameContext, ExecutableCommand, CommandResult, ExecutableCommandWithInput};
 pub use errors::GomocupError;
 use strum::Display;
 mod commands;
@@ -40,7 +40,7 @@ fn run_inner<T: BufRead, B: Brain, G: GameBoard>(mut input: T, mut brain: &mut B
 
         let opts = InputOptions::try_from(buffer)?;
 
-        match opts.command.execute(brain, &mut context, opts.args) {
+        match opts.command.execute(&mut input, brain, &mut context, opts.args) {
             Ok(cmd) => match cmd {
                 CommandResult::Continue => {}
                 CommandResult::Output(output) => println!("{}", output),

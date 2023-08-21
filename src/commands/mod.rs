@@ -1,5 +1,5 @@
 
-use std::default;
+use std::{default, io::BufRead};
 
 use enum_dispatch::enum_dispatch;
 use strum::IntoStaticStr;
@@ -47,8 +47,19 @@ pub trait ExecutableCommand : Default {
     fn execute<G: GameBoard, B: Brain>(&self, brain: &mut B, context: &mut GameContext<G>, args: Vec<String>) -> Result<CommandResult, CommandError>;
 }
 
+#[enum_dispatch]
+pub trait ExecutableCommandWithInput {
+    fn execute<G: GameBoard, B: Brain, R: BufRead>(&self, input: &mut R, brain: &mut B, context: &mut GameContext<G>, args: Vec<String>) -> Result<CommandResult, CommandError>;
+}
+
+impl<T: ExecutableCommand> ExecutableCommandWithInput for T {
+    fn execute<G: GameBoard, B: Brain, R: BufRead>(&self, _: &mut R, brain: &mut B, context: &mut GameContext<G>, args: Vec<String>) -> Result<CommandResult, CommandError> {
+        self.execute(brain, context, args)
+    }
+}
+
 #[derive(IntoStaticStr, Display, EnumString)]
-#[enum_dispatch(ExecutableCommand)]
+#[enum_dispatch(ExecutableCommandWithInput)]
 pub enum Command {
     #[strum(serialize="START")]
     Start(StartCommand),
