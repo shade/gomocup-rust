@@ -1,7 +1,8 @@
 use mockall::automock;
 
 use crate::board::GameBoard;
-
+pub mod random;
+pub use random::RandomBrain;
 
 pub struct GameConfig {
     pub game_n: usize,
@@ -9,22 +10,22 @@ pub struct GameConfig {
     pub game_k: usize
 }
 
+#[derive(Debug)]
 pub enum BrainError {
     /// Provides a string context for debugging purposes
     IllegalMove(String),
-
-    
-    CommonError(String)
+    CommonError(String),
+    NoMoveFound
 }
 
 #[automock]
 pub trait Brain {
     /// Run before a game starts to do any initialization logic
     /// e.g. precomputing results, memory allocation, etc.
-    fn pre_initialize(&self);
+    fn pre_initialize(&self) {}
 
     /// Compute the next move on the gameboard. Depending on
-    fn next_move<T: GameBoard + 'static>(&self, board: T) -> Result<(), BrainError>;
+    fn next_move<T: GameBoard + 'static>(&self, board: &mut T) -> Result<(u64, u64), BrainError>;
 
     /// Setup the game config for the brain.
     /// Though most of the GameConfig is sent at the beginning of the game it is possible
@@ -32,5 +33,5 @@ pub trait Brain {
     fn set_config(config: GameConfig) -> Result<(), BrainError>;
 
     /// Run after a game ends to do any cleanup logic.
-    fn end(&mut self);
+    fn end(&mut self) {}
 }

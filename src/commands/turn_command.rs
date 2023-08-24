@@ -1,6 +1,6 @@
 use std::num::ParseIntError;
 
-use crate::{errors::GomocupError, commands::CommandResult, GameBoard, Brain, assert_argument_count};
+use crate::{commands::CommandResult, GameBoard, Brain, assert_argument_count};
 
 use super::{ExecutableCommand, game_context::GameContext, CommandError};
 
@@ -26,7 +26,7 @@ impl ExecutableCommand for TurnCommand {
 
         context.board.as_mut()
             .ok_or(CommandError::IllegalState("Board not initialized".to_string()))?
-            .place(row as usize, col as usize)
+            .place(row, col)
             .map_err(|e| CommandError::IllegalState(format!("Could not place piece at {}, {}: {:?}", row, col, e)))?;
 
         Ok(CommandResult::Ok)

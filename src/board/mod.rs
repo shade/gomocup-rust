@@ -32,11 +32,11 @@ impl std::ops::Not for GamePiece {
 }
 
 #[mockall::automock]
-pub trait GameBoard: Default {
-    fn new(size: u64) -> Result<Self, BoardError>;
+pub trait GameBoard : Default {
+    fn new(size: u64) -> Result<Self, BoardError> where Self: Sized;
 
     /// Get the length of the board, the board is always square.
-    fn get_length(&self) -> usize {
+    fn get_length(&self) -> u64 {
         todo!();
     }
 
@@ -45,23 +45,14 @@ pub trait GameBoard: Default {
         todo!();
     }
 
-    fn place(&self, row: usize, col: usize) -> Result<(), BoardError> {
+    fn place(&self, row: u64, col: u64) -> Result<(), BoardError> {
         todo!();
     }
-    fn remove(&self, row: usize, col: usize) -> Result<(), BoardError> {
+    fn remove(&self, row: u64, col: u64) -> Result<(), BoardError> {
         todo!();
     }
 
-    fn get_string(&self) -> String {
-        let a: String = String::new();
-        for row in 0..self.get_length() {
-            for col in 0..self.get_length() {
-            }
-        }
-        return "".to_string();
-    }
-
-    fn get_piece(&self, row: usize, col: usize) -> String {
+    fn get_piece(&self, row: u64, col: u64) -> GamePiece {
         panic!("You must either implement display() or get_piece() for your GameBoard");
     }
 }

@@ -1,5 +1,7 @@
+pub mod brain;
+pub use brain::Brain;
+pub use brain::random;
 mod board;
-mod brain;
 
 #[macro_use]
 extern crate strum;
@@ -21,14 +23,16 @@ mod errors;
 use commands::input_options::InputOptions;
 use std::io::{BufRead, Read};
 
-pub use brain::Brain;
+pub use brain::BrainError;
+pub use brain::GameConfig;
+pub use board::array::ArrayBoard;
 
-pub fn run<B: Brain, G: GameBoard>(brain: &mut B) -> Result<(), GomocupError> {
+pub fn run<B: Brain, G: GameBoard + 'static>(brain: &mut B) -> Result<(), GomocupError> {
     let guarded_reader = std::io::stdin().lock();
     run_inner::<StdinLock<'_>, B, G>(guarded_reader, brain)
 }
 
-fn run_inner<T: BufRead, B: Brain, G: GameBoard>(mut input: T, mut brain: &mut B) -> Result<(), GomocupError> {
+fn run_inner<T: BufRead, B: Brain, G: GameBoard + 'static>(mut input: T, brain: &mut B) -> Result<(), GomocupError> {
     let mut context: GameContext<G> = GameContext::default();
     brain.pre_initialize();
 
@@ -38,7 +42,14 @@ fn run_inner<T: BufRead, B: Brain, G: GameBoard>(mut input: T, mut brain: &mut B
             .read_line(&mut buffer)
             .map_err(|err| io_error!(err, "Error reading from stdin"))?;
 
-        let opts = InputOptions::try_from(buffer)?;
+        let opts_result = InputOptions::try_from(buffer);
+        let opts = match opts_result {
+            Ok(opts) => opts,
+            Err(err) => {
+                println!("UNKNOWN {:?}", err);
+                continue;
+            }
+        };
 
         match opts.command.execute(&mut input, brain, &mut context, opts.args) {
             Ok(cmd) => match cmd {

@@ -4,7 +4,7 @@ use std::{default, io::BufRead};
 use enum_dispatch::enum_dispatch;
 use strum::IntoStaticStr;
 
-use crate::{Brain, board::{GameBoard, BoardError}, errors::GomocupError};
+use crate::{Brain, board::{GameBoard, BoardError}, errors::GomocupError, BrainError};
 
 use self::{game_context::GameContext, start_command::StartCommand, turn_command::TurnCommand, info_command::InfoCommand, begin_command::BeginCommand, board_command::BoardCommand, end_command::EndCommand};
 pub mod game_context;
@@ -24,6 +24,7 @@ pub enum CommandError {
     InvalidCommand,
     InvalidArguments(String),
     BoardError(BoardError),
+    BrainError(BrainError),
 
     IllegalState(String)
 }
@@ -31,6 +32,12 @@ pub enum CommandError {
 impl From<BoardError> for CommandError {
     fn from(value: BoardError) -> Self {
         CommandError::BoardError(value)
+    }
+}
+
+impl From<BrainError> for CommandError {
+    fn from(value: BrainError) -> Self {
+        CommandError::BrainError(value)
     }
 }
 
@@ -44,16 +51,16 @@ pub enum CommandResult {
 
 #[enum_dispatch]
 pub trait ExecutableCommand : Default {
-    fn execute<G: GameBoard, B: Brain>(&self, brain: &mut B, context: &mut GameContext<G>, args: Vec<String>) -> Result<CommandResult, CommandError>;
+    fn execute<G: GameBoard + 'static, B: Brain>(&self, brain: &mut B, context: &mut GameContext<G>, args: Vec<String>) -> Result<CommandResult, CommandError>;
 }
 
 #[enum_dispatch]
 pub trait ExecutableCommandWithInput {
-    fn execute<G: GameBoard, B: Brain, R: BufRead>(&self, input: &mut R, brain: &mut B, context: &mut GameContext<G>, args: Vec<String>) -> Result<CommandResult, CommandError>;
+    fn execute<G: GameBoard + 'static, B: Brain, R: BufRead>(&self, input: &mut R, brain: &mut B, context: &mut GameContext<G>, args: Vec<String>) -> Result<CommandResult, CommandError>;
 }
 
 impl<T: ExecutableCommand> ExecutableCommandWithInput for T {
-    fn execute<G: GameBoard, B: Brain, R: BufRead>(&self, _: &mut R, brain: &mut B, context: &mut GameContext<G>, args: Vec<String>) -> Result<CommandResult, CommandError> {
+    fn execute<G: GameBoard + 'static, B: Brain, R: BufRead>(&self, _: &mut R, brain: &mut B, context: &mut GameContext<G>, args: Vec<String>) -> Result<CommandResult, CommandError> {
         self.execute(brain, context, args)
     }
 }
