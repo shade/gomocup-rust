@@ -1,6 +1,6 @@
 use std::num::ParseIntError;
 
-use crate::{commands::CommandResult, GameBoard, Brain, assert_argument_count};
+use crate::{commands::CommandResult, GameBoard, Brain, assert_argument_count, board::GamePiece};
 
 use super::{ExecutableCommand, game_context::GameContext, CommandError};
 
@@ -26,7 +26,7 @@ impl ExecutableCommand for TurnCommand {
 
         context.board.as_mut()
             .ok_or(CommandError::IllegalState("Board not initialized".to_string()))?
-            .place(row, col)
+            .place(row, col, GamePiece::Black)
             .map_err(|e| CommandError::IllegalState(format!("Could not place piece at {}, {}: {:?}", row, col, e)))?;
 
         Ok(CommandResult::Ok)
@@ -64,9 +64,9 @@ mod test {
         let mut context = GameContext::default();
         let mut board = MockGameBoard::default();
         board.expect_place()
-            .with(eq(1), eq(2))
+            .with(eq(1), eq(2), eq(GamePiece::Black))
             .times(1)
-            .returning(|_, _| Ok(()));
+            .returning(|_, _, _| Ok(()));
 
         context.board = Some(board);
 
@@ -82,9 +82,9 @@ mod test {
         let mut context = GameContext::default();
         let mut board = MockGameBoard::default();
         board.expect_place()
-            .with(eq(1), eq(2))
+            .with(eq(1), eq(2), eq(GamePiece::Black))
             .times(1)
-            .returning(|_, _| Err(BoardError::InvalidPlace("".to_string())));
+            .returning(|_, _, _| Err(BoardError::InvalidPlace("".to_string())));
 
         context.board = Some(board);
 

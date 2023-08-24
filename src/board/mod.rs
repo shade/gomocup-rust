@@ -11,12 +11,22 @@ pub enum BoardError {
 }
 
 
-#[derive(Default)]
+#[derive(Default, Debug, Eq, PartialEq)]
 pub enum GamePiece {
     #[default]
     Empty,
     White,
     Black
+}
+
+impl From<u64> for GamePiece {
+    fn from(value: u64) -> Self {
+        match value {
+            1 => GamePiece::Black,
+            2 => GamePiece::White,
+            _ => GamePiece::Empty,
+        }
+    }
 }
 
 impl std::ops::Not for GamePiece {
@@ -45,7 +55,7 @@ pub trait GameBoard : Default {
         todo!();
     }
 
-    fn place(&self, row: u64, col: u64) -> Result<(), BoardError> {
+    fn place(&self, row: u64, col: u64, piece_type: GamePiece) -> Result<(), BoardError> {
         todo!();
     }
     fn remove(&self, row: u64, col: u64) -> Result<(), BoardError> {
