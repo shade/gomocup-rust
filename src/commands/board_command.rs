@@ -44,12 +44,6 @@ impl ExecutableCommandWithInput for BoardCommand {
             }
 
             let (row, col, piece_type) = (args[0], args[1], args[2]);
-            println!(
-                "placing piece at {}, {} {:?}",
-                row,
-                col,
-                Into::<GamePiece>::into(piece_type)
-            );
             if let Some(board) = context.board.as_mut() {
                 board.place(row, col, piece_type.into())?;
             } else {

@@ -1,36 +1,33 @@
 use mockall::automock;
 
-use crate::board::GameBoard;
+use crate::{board::GameBoard, config::GameConfig};
 pub mod random;
 pub use random::RandomBrain;
-
-pub struct GameConfig {
-    pub game_n: usize,
-    pub game_m: usize,
-    pub game_k: usize
-}
 
 #[derive(Debug)]
 pub enum BrainError {
     /// Provides a string context for debugging purposes
     IllegalMove(String),
     CommonError(String),
-    NoMoveFound
+    NoMoveFound,
 }
 
 #[automock]
 pub trait Brain {
     /// Run before a game starts to do any initialization logic
     /// e.g. precomputing results, memory allocation, etc.
-    fn pre_initialize(&self) {}
+    fn pre_initialize(&mut self) {}
 
     /// Compute the next move on the gameboard. Depending on
-    fn next_move<T: GameBoard + 'static>(&self, board: &mut T) -> Result<(u64, u64), BrainError>;
+    fn next_move<T: GameBoard + 'static>(
+        &mut self,
+        board: &mut T,
+    ) -> Result<(u64, u64), BrainError>;
 
     /// Setup the game config for the brain.
     /// Though most of the GameConfig is sent at the beginning of the game it is possible
     /// for this value to change mid-game. The brain should be able to handle this.
-    fn set_config(config: GameConfig) -> Result<(), BrainError>;
+    fn set_config(&mut self, config: GameConfig) -> Result<(), BrainError>;
 
     /// Run after a game ends to do any cleanup logic.
     fn end(&mut self) {}

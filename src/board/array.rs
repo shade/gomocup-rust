@@ -1,6 +1,6 @@
 use crate::GameBoard;
 
-use super::{GamePiece, BoardError};
+use super::{BoardError, GamePiece};
 
 #[derive(Default)]
 pub struct ArrayBoard {
@@ -8,19 +8,30 @@ pub struct ArrayBoard {
     pub n: usize,
     pub m: usize,
     pub k: usize,
-    pub current_piece: GamePiece
+    pub current_piece: GamePiece,
 }
 
 impl ArrayBoard {
-    fn get_piece<'a>(&'a mut self, row: usize, col: usize) -> Result<&'a mut Option<GamePiece>, BoardError> {
-        let game_piece = self.board.get_mut(row)
-            .ok_or(BoardError::InvalidPlace(format!("Row is out of bounds: {}", row)))?
+    fn get_piece<'a>(
+        &'a mut self,
+        row: usize,
+        col: usize,
+    ) -> Result<&'a mut Option<GamePiece>, BoardError> {
+        let game_piece = self
+            .board
+            .get_mut(row)
+            .ok_or(BoardError::InvalidPlace(format!(
+                "Row is out of bounds: {}",
+                row
+            )))?
             .get_mut(col)
-            .ok_or(BoardError::InvalidPlace(format!("Column is out of bounds: {}", col)))?;
+            .ok_or(BoardError::InvalidPlace(format!(
+                "Column is out of bounds: {}",
+                col
+            )))?;
         Ok(game_piece)
     }
 }
-
 
 impl GameBoard for ArrayBoard {
     fn new(size: u64) -> Result<Self, BoardError> {

@@ -1,11 +1,10 @@
 use crate::commands::CommandError;
 
-
 #[derive(Display, Debug)]
 pub enum GomocupError {
     IOError(std::io::Error, String),
     ReadError(String),
-    CommandError(CommandError)
+    CommandError(CommandError),
 }
 
 impl From<CommandError> for GomocupError {

@@ -1,6 +1,6 @@
-use crate::{assert_argument_count, GameBoard, Brain};
+use crate::{assert_argument_count, Brain, GameBoard};
 
-use super::{ExecutableCommand, CommandResult};
+use super::{CommandResult, ExecutableCommand};
 use crate::commands::game_context::GameContext;
 use crate::commands::CommandError;
 
@@ -8,7 +8,12 @@ use crate::commands::CommandError;
 pub struct EndCommand;
 
 impl ExecutableCommand for EndCommand {
-    fn execute<G: GameBoard, B: Brain>(&self, brain: &mut B, context: &mut GameContext<G>, args: Vec<String>) -> Result<CommandResult, CommandError> {
+    fn execute<G: GameBoard, B: Brain>(
+        &self,
+        brain: &mut B,
+        context: &mut GameContext<G>,
+        args: Vec<String>,
+    ) -> Result<CommandResult, CommandError> {
         assert_argument_count!(args, 0);
         brain.end();
         Ok(CommandResult::Quit)
@@ -20,8 +25,13 @@ mod test {
     use assert_matches::assert_matches;
     use rstest::rstest;
 
-    use crate::{Brain, commands::{game_context::GameContext, CommandError}, board::MockGameBoard, brain::MockBrain};
     use super::*;
+    use crate::{
+        board::MockGameBoard,
+        brain::MockBrain,
+        commands::{game_context::GameContext, CommandError},
+        Brain,
+    };
 
     #[rstest]
     #[case(vec!["1", "2"])]

@@ -35,9 +35,8 @@ mod test {
     use crate::{
         board::MockGameBoard,
         brain::MockBrain,
-        commands::{
-            game_context::GameContext, CommandError, ExecutableCommand, CommandResult,
-        }, GameBoard, BrainError,
+        commands::{game_context::GameContext, CommandError, CommandResult, ExecutableCommand},
+        BrainError, GameBoard,
     };
     use assert_matches::assert_matches;
     use mockall::predicate::eq;
@@ -63,10 +62,11 @@ mod test {
     fn begin_command_emits_brain_move() {
         let mut brain = MockBrain::default();
         let mut mock_board = MockGameBoard::default();
-        brain.expect_next_move()
-            .times(1).return_once(|_:&mut MockGameBoard| Ok((3, 4)));
-        
-        
+        brain
+            .expect_next_move()
+            .times(1)
+            .return_once(|_: &mut MockGameBoard| Ok((3, 4)));
+
         let mut context = GameContext::default();
         context.board = Some(mock_board);
         let command = BeginCommand::default();
@@ -78,29 +78,32 @@ mod test {
     #[test]
     fn begin_command_emits_no_board_err() {
         let mut brain = MockBrain::default();
-        
+
         let mut context = GameContext::<MockGameBoard>::default();
         let command = BeginCommand::default();
 
-        let result = command.execute(&mut brain, &mut context, vec![]).unwrap_err();
+        let result = command
+            .execute(&mut brain, &mut context, vec![])
+            .unwrap_err();
         assert_matches!(result, CommandError::IllegalState(_));
     }
 
     #[test]
     fn begin_command_brain_error_bubbles_up() {
-
         let mut brain = MockBrain::default();
         let mock_board = MockGameBoard::default();
-        brain.expect_next_move()
+        brain
+            .expect_next_move()
             .times(1)
-            .return_once(|_:&mut MockGameBoard| Err(BrainError::NoMoveFound));
-        
-        
+            .return_once(|_: &mut MockGameBoard| Err(BrainError::NoMoveFound));
+
         let mut context = GameContext::default();
         context.board = Some(mock_board);
         let command = BeginCommand::default();
 
-        let brain_err = command.execute(&mut brain, &mut context, vec![]).unwrap_err();
+        let brain_err = command
+            .execute(&mut brain, &mut context, vec![])
+            .unwrap_err();
         assert_matches!(brain_err, CommandError::BrainError(BrainError::NoMoveFound));
     }
 }

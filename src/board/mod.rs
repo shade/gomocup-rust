@@ -1,22 +1,16 @@
-use std::default;
-
-use crate::brain::GameConfig;
-
-
 pub mod array;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum BoardError {
-    InvalidPlace(String)
+    InvalidPlace(String),
 }
-
 
 #[derive(Default, Debug, Eq, PartialEq)]
 pub enum GamePiece {
     #[default]
     Empty,
     White,
-    Black
+    Black,
 }
 
 impl From<u64> for GamePiece {
@@ -36,14 +30,16 @@ impl std::ops::Not for GamePiece {
         match self {
             GamePiece::White => GamePiece::Black,
             GamePiece::Black => GamePiece::White,
-            GamePiece::Empty => GamePiece::Empty
+            GamePiece::Empty => GamePiece::Empty,
         }
     }
 }
 
 #[mockall::automock]
-pub trait GameBoard : Default {
-    fn new(size: u64) -> Result<Self, BoardError> where Self: Sized;
+pub trait GameBoard: Default {
+    fn new(size: u64) -> Result<Self, BoardError>
+    where
+        Self: Sized;
 
     /// Get the length of the board, the board is always square.
     fn get_length(&self) -> u64 {
