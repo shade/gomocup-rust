@@ -2,7 +2,7 @@ use std::{sync::Arc, time::Duration};
 
 use crate::{
     assert_argument_count, commands::ExecutableCommand, config, errors::GomocupError, Brain,
-    GameBoard,
+    GameBoard, board::MockGameBoard,
 };
 
 use super::{game_context::GameContext, CommandError, CommandResult};
@@ -119,7 +119,7 @@ impl ExecutableCommand for InfoCommand {
             }
         }
 
-        brain.set_config(context.config.clone());
+        brain.set_config(context.config.clone())?;
 
         Ok(CommandResult::Ok)
     }
@@ -130,7 +130,7 @@ mod tests {
     use crate::{
         board::MockGameBoard,
         brain::MockBrain,
-        config::{GameRules, GameType},
+        config::{GameRules, GameType}, BrainError,
     };
 
     use super::*;
@@ -261,5 +261,25 @@ mod tests {
         let result = info_command.execute(&mut mock_brain, &mut context, args);
 
         assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_info_command_propagate_error() {
+        let mut mock_brain = MockBrain::new();
+        let mut context = GameContext::<MockGameBoard>::default();
+        let args = vec!["timeout_turn".to_string(), "5000".to_string()];
+        let info_command = InfoCommand;
+
+        // Expectation: The set_config method should be called on the mock Brain
+        // We are simulating an error being returned from the Brain
+        mock_brain.expect_set_config()
+            .times(1)
+            .returning(|_| Err(BrainError::CommonError("Test error".to_string())));
+
+        let result = info_command.execute(&mut mock_brain, &mut context, args);
+
+        // Expectation: The command should return an error and propagate the BrainError
+        assert!(result.is_err());
+        assert!(matches!(result.unwrap_err(), CommandError::BrainError(_)));
     }
 }

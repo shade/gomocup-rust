@@ -12,7 +12,7 @@ use crate::{
 use self::{
     begin_command::BeginCommand, board_command::BoardCommand, end_command::EndCommand,
     game_context::GameContext, info_command::InfoCommand, start_command::StartCommand,
-    turn_command::TurnCommand,
+    turn_command::TurnCommand, about_command::AboutCommand,
 };
 pub mod game_context;
 
@@ -25,6 +25,7 @@ pub mod end_command;
 pub mod info_command;
 pub mod start_command;
 pub mod turn_command;
+mod about_command;
 
 #[derive(Debug, Display)]
 pub enum CommandError {
@@ -103,6 +104,8 @@ pub enum Command {
     Board(BoardCommand),
     #[strum(serialize = "END")]
     End(EndCommand),
+    #[strum(serialize = "ABOUT")]
+    About(AboutCommand),
 }
 
 impl Default for Command {

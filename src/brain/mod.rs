@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use mockall::automock;
 
 use crate::{board::GameBoard, config::GameConfig};
@@ -31,4 +33,7 @@ pub trait Brain {
 
     /// Run after a game ends to do any cleanup logic.
     fn end(&mut self) {}
+
+    /// Returns information to be printed if asked ABOUT
+    fn about(&self) -> HashMap<String, String>;
 }

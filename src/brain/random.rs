@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::{board::GamePiece, config::GameConfig, Brain, BrainError, GameBoard};
 
 #[derive(Default)]
@@ -29,5 +31,9 @@ impl Brain for RandomBrain {
 
     fn set_config(&mut self, config: GameConfig) -> Result<(), BrainError> {
         Ok(())
+    }
+
+    fn about(&self) -> HashMap<String,String> {
+        todo!()
     }
 }
